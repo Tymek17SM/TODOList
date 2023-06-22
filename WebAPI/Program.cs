@@ -1,42 +1,60 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using NLog;
 using NLog.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using WebAPI.Installers;
+using WebAPI.Middelwares;
 
-namespace WebAPI
+var logger = LogManager.Setup().LoadConfigurationFromFile("").GetCurrentClassLogger();
+
+try
 {
-    public class Program
+    #region Builder
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.InstallServicesInAssembly(builder.Configuration);
+
+    builder.Logging.ClearProviders();
+
+    builder.Host.UseNLog();
+
+    #endregion
+
+    var app = builder.Build();
+
+    #region App
+
+    if (app.Environment.IsDevelopment())
     {
-        public static void Main(string[] args)
-        {
-            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-
-            try
-            {
-                CreateHostBuilder(args).Build().Run();
-            }
-            catch(Exception ex)
-            {
-                logger.Fatal(ex, $"API stopped.{ex.Message}\n{ex.StackTrace}");
-                throw;
-            }
-            finally
-            {
-                NLog.LogManager.Shutdown();
-            }
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
-                .UseNLog();
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1"));
     }
+
+    app.UseMiddleware<ErrorHandlingMiddelware>();
+
+    app.UseHttpsRedirection();
+
+    app.UseRouting();
+
+    app.UseAuthentication();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
+
+    #endregion
 }
+catch(Exception ex)
+{
+    logger.Fatal(ex, $"API stopped.{ex.Message}\n{ex.StackTrace}");
+}
+finally
+{
+    LogManager.Shutdown();
+}
+
+
+
+
