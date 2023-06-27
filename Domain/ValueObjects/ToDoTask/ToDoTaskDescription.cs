@@ -18,6 +18,6 @@ namespace Domain.ValueObjects.ToDoTask
 
         public static implicit operator string(ToDoTaskDescription description) => description.Value;
 
-        public static explicit operator ToDoTaskDescription(string value) => new(value);
+        public static implicit operator ToDoTaskDescription(string value) => new(value);
     }
 }

@@ -13,6 +13,6 @@ namespace Domain.ValueObjects.ToDoTask
 
        public static implicit operator DateTime?(ToDoTaskDeadline deadline) => deadline.Value;
 
-       public static explicit operator ToDoTaskDeadline(DateTime? value) => new ToDoTaskDeadline(value);
+       public static implicit operator ToDoTaskDeadline(DateTime? value) => new ToDoTaskDeadline(value);
     }
 }

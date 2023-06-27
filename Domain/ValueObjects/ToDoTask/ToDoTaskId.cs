@@ -22,7 +22,7 @@ namespace Domain.ValueObjects.ToDoTask
         
 
         //Jak robisz Guid na ToDoTaskId 
-        public static explicit operator ToDoTaskId(Guid value) => new(value);
+        public static implicit operator ToDoTaskId(Guid value) => new(value);
        
     }
 }
