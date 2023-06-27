@@ -1,6 +1,6 @@
-﻿using Domain.Common;
-using Domain.Entitis;
+﻿using Domain.Entitis;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstraction.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
